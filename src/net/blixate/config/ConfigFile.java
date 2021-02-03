@@ -26,7 +26,7 @@ public class ConfigFile {
 	 * This must be called before any other methods.
 	 * The important parts of the file will be loaded into memory, the rest
 	 * will just be ignored.
-	 * @returns true if the reading succeeded, false if an error occurred.
+	 * @return true if the reading succeeded, false if an error occurred.
 	 * @throws IOException
 	 */
 	public boolean read() throws IOException {
