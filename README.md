@@ -20,27 +20,27 @@ Here is an example on how to get these properties from Java:
 
 ```java
 public static void main(String[] args) {
-		ConfigFile file;
-		file = new ConfigFile(new File("configtest.bcfg"));
-		// OR
-		file = ConfigFile.readFile("configtest.bcfg");
-		try {
-			file.read();
-		} catch (IOException e) {
-			System.out.println("Something went wrong! Couldn't load configuration file!");
-			return;
-		}
-		ConfigSection settings = file.getSection("Settings");
-		String language = settings.getProperty("language").getAsString();
-		float mouse_sensitivity = settings.getProperty("sensitivity").getAsFloat();
-		ConfigArray abilitiesArr = settings.getProperty("unlocked_abilities").asArray();
-		
-		System.out.println("Your language: " + language);
-		System.out.println("Mouse Sensitivity: " + mouse_sensitivity);
-		System.out.println("Abilties:");
-		for(ConfigProperty ability : abilitiesArr.values()) {
-			System.out.println(" - " + ability.getAsString());
-	  }
+	ConfigFile file;
+	file = new ConfigFile(new File("configtest.bcfg"));
+	// OR
+	file = ConfigFile.readFile("configtest.bcfg");
+	try {
+		file.read();
+	} catch (IOException e) {
+		System.out.println("Something went wrong! Couldn't load configuration file!");
+		return;
+	}
+	ConfigSection settings = file.getSection("Settings");
+	String language = settings.getProperty("language").getAsString();
+	float mouse_sensitivity = settings.getProperty("sensitivity").getAsFloat();
+	ConfigArray abilitiesArr = settings.getProperty("unlocked_abilities").asArray();
+
+	System.out.println("Your language: " + language);
+	System.out.println("Mouse Sensitivity: " + mouse_sensitivity);
+	System.out.println("Abilties:");
+	for(ConfigProperty ability : abilitiesArr.values()) {
+		System.out.println(" - " + ability.getAsString());
+	}
 }
 ```
 Here is the output:
