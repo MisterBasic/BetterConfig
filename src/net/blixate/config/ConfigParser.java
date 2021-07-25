@@ -198,7 +198,6 @@ public class ConfigParser {
 	}
 	
 	private static ConfigArray evaluateArray(String propName, Stack<Tok> tokens) {
-		System.out.println(tokens.toString());
 		int nestingLevel = 0;
 		Stack<Tok> elements = new Stack<Tok>();
 		ConfigArray array = new ConfigArray(propName, null);
@@ -234,7 +233,7 @@ public class ConfigParser {
 			}
 		}
 		if(nestingLevel != 0) {
-			System.out.println("Array not terminated!");
+			throw new ConfigParsingException("Array not terminated!");
 		}
 		return array;
 	}
