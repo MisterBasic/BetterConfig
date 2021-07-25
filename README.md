@@ -1,6 +1,15 @@
 # BetterConfig
 BCFG (short for Better Configuration File-format... G) is a multi-purpose configuration format allows splitting up properties into sections. Each section will have it's own properties, and sections can inherit properties from other sections!
 
+## Why use this format? Why not INI, JSON or TOML?
+
+- JSON is probably the most obvious: It is NOT a configuration format.
+- INI is a terrible format. No data types, array nesting, or anything other than text.
+- TOML is suprising good, I didn't learn of it until after making this. The only problem is serialization, it cannot be serialized. BCFG can be serialized (it's just text, in fact the entire file can be one line long).
+- YAML is a standardized mess. You can find issues with YAML using Google.
+
+If you are coming from these formats, this format should be familar. The only difference is the symbols used.
+
 ```py
 [Settings]
 language = "English";
