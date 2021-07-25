@@ -5,7 +5,7 @@ BCFG (short for Better Configuration File-format... G) is a multi-purpose config
 
 - JSON is probably the most obvious: It is NOT a configuration format.
 - INI is a terrible format. No data types, array nesting, or anything other than text.
-- TOML is suprising good, I didn't learn of it until after making this. The only problem is serialization, it cannot be serialized. BCFG can be serialized (it's just text, in fact the entire file can be one line long).
+- TOML is suprising good, I didn't learn of it until after making this. The only problem is serialization, it wasn't designed to be serialized. BCFG can be serialized (it's just text, in fact the entire file can be one line long).
 - YAML is a standardized mess. You can find issues with YAML using Google.
 
 If you are coming from these formats, this format should be familar. The only difference is the symbols used.
