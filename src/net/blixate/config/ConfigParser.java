@@ -156,7 +156,6 @@ public class ConfigParser {
 		if(tokens.size() < 1) {
 			return null;
 		}
-		System.out.println(tokens);
 		if(tokens.firstElement().t == Token.LBRACE) {
 			return evaluateArray(propName, tokens);
 		}
