@@ -1,5 +1,5 @@
-# BlixateConfig
-.bcfg configuration format allows splitting up properties into sections. Each section will have it's own properties, and sections can inherit properties from other sections!
+# BetterConfig
+BCFG (short for Better Configuration File-format... G) is a multi-purpose configuration format allows splitting up properties into sections. Each section will have it's own properties, and sections can inherit properties from other sections!
 
 ```py
 [Settings]
@@ -15,9 +15,7 @@ random_stuff = {
   4, "A String", "Dynamic typing in arrays!?", 420.69
 };
 ```
-
 Here is an example on how to get these properties from Java:
-
 ```java
 public static void main(String[] args) {
 	ConfigFile file;
