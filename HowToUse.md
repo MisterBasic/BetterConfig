@@ -24,7 +24,8 @@ the same name in the same section, the one defined last should be used.
 
 __Example__:
 ```my_property = 42;
-my_property="hehe";```
+my_property="hehe";
+```
 
 ## DEFINING CONSTANTS
 Allow reference to other properties!
@@ -39,7 +40,8 @@ Constants can be referred even in another section.
 
 __Example__:
 ```*my_constant = 42;
-my_property = my_constant;```
+my_property = my_constant;
+```
 
 ## VALUE TYPES
 	What value can a property hold?
