@@ -27,12 +27,8 @@ random_stuff = {
 Here is an example on how to get these properties from Java:
 ```java
 public static void main(String[] args) {
-	ConfigFile file;
-	file = ConfigFile.readFile("configtest.bcfg"); // Handles IOException already.
-	// If you want to handle the IOException:
-	file = new ConfigFile(new File("configtest.bcfg"));
-	try { file.read() } catch(IOException e) { /* handle exception here... */ }
-	// Otherwise, ignore those two lines and just use ConfigFile.readFile()
+	ConfigFile file = ConfigFile.readFile("configtest.bcfg"); // Handles IOException already.
+
 	ConfigSection settings = file.getSection("Settings");
 	String language = settings.getProperty("language").getAsString();
 	float mouse_sensitivity = settings.getProperty("sensitivity").getAsFloat();
