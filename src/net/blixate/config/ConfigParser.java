@@ -13,6 +13,9 @@ import net.blixate.config.parser.Token;
 
 public class ConfigParser {
 	
+	static final Pattern PARENT_SEPERATE_PATTERN =
+			Pattern.compile("\\[([a-zA-Z_]+[a-zA-Z0-9_]*).*?[:].*?([a-zA-Z_]+[a-zA-Z0-9_]*)\\]");
+	
 	static Pattern pattern;
 	static ArrayList<ConfigProperty> constantPool;
 	
@@ -27,10 +30,7 @@ public class ConfigParser {
 	
 	Tok[] tokens;
 	OutputStream dump = null;
-	
 	ArrayList<ConfigSection> sections;
-	
-	
 	
 	public ConfigParser(OutputStream output) {
 		this.dump = output;
@@ -40,7 +40,9 @@ public class ConfigParser {
 	public ConfigSection[] getSections() {
 		return this.sections.toArray(new ConfigSection[0]);
 	}
-	
+	/**
+	 * Lexical analysis of the file.
+	 */
 	public void lex(String content) {
 		long start = System.currentTimeMillis();
 		Matcher matcher = pattern.matcher(content);
@@ -57,11 +59,15 @@ public class ConfigParser {
 				}
 			}
 		}
+		this.tokens = tokens.toArray(new Tok[0]);
 		long end = System.currentTimeMillis();
 		debug("Lex Time: " + (end - start) + "ms");
-		this.tokens = tokens.toArray(new Tok[0]);
 	}
 	
+	/**
+	 * Parse the file's contents and load the relevant data into classes.
+	 * Before you call this function, you must call {@link ConfigParser#lex(String)}
+	 */
 	public void parse() {
 		long start = System.currentTimeMillis();
 		ConfigSection currentSection = null;
@@ -111,7 +117,7 @@ public class ConfigParser {
 						debug("[Parser] Section \"" + currentSection.name + "\" defined.");
 					}
 					if(sectionHasParent(token.data())) {
-						Pattern p = Pattern.compile("\\[([a-zA-Z_]+[a-zA-Z0-9_]*).*?[:].*?([a-zA-Z_]+[a-zA-Z0-9_]*)\\]");
+						Pattern p = PARENT_SEPERATE_PATTERN;
 						Matcher m = p.matcher(token.data());
 						if(m.find()) {
 							String sectionName = m.group(1);
@@ -151,7 +157,6 @@ public class ConfigParser {
 		long end = System.currentTimeMillis();
 		debug("Parse Time: " + (end - start) + "ms");
 	}
-	
 	private static ConfigProperty evaluate(String propName, Stack<Tok> tokens) {
 		if(tokens.size() < 1) {
 			return null;
@@ -167,7 +172,7 @@ public class ConfigParser {
 			if(p == null) {
 				throw new ConfigParsingException("Unknown constant \"" + tokens.peek().data() + "\" at " + tokens.peek().index());
 			}
-			return p;
+			return new ConfigProperty(propName, p.value);
 		}
 		return new ConfigProperty(propName, tokens.peek().data());
 	}

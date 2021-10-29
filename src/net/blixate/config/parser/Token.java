@@ -1,13 +1,14 @@
 package net.blixate.config.parser;
 
 public enum Token {
+	// Regexes that match the desired tokens.
 	COMMENT("\\#.*"),
 	NULL("null"),
 	BOOLEAN("(true|false)"),
 	SECTION("\\[[a-zA-Z_]+[a-zA-Z0-9_]*(.*?[:].*?[a-zA-Z_]+[a-zA-Z0-9_]*)?\\]"),
 	PROPERTY("[*]?[a-zA-Z_][a-zA-Z0-9_]*"),
 	EQUALS("[=]"),
-	STRING("\".*?\"", "\'.*?\'"),
+	STRING("\"(?:[^\"\\]|\\.)*\"", "\'(?:[^\'\\]|\\.)*\'"),
 	NUMBER("[0-9]*[.]?[0-9]+"),
 	LBRACE("\\{"),
 	RBRACE("\\}"),
@@ -22,7 +23,6 @@ public enum Token {
 		this.regex = regex;
 	}
 	Token(String...regexes) {
-		// ()|()
 		String[] s = new String[regexes.length];
 		for(int i = 0; i < regexes.length; i++) s[i] = "(" + regexes[i] + ")";
 		this.regex = String.join("|", s);

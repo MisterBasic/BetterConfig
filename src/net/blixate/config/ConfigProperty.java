@@ -1,12 +1,9 @@
 package net.blixate.config;
 
+import net.blixate.config.error.ConfigTypeException;
 import net.blixate.config.parser.Token;
 
 public class ConfigProperty {
-	
-	// This defines a property
-	// String properties are funny, since "42" will still parse
-	// as 42 if getAsInt() is called.
 	
 	String name;
 	String value;
@@ -25,15 +22,27 @@ public class ConfigProperty {
 	}
 	
 	public int getAsInt() {
-		return Integer.parseInt(value);
+		try {
+			return Integer.parseInt(value);
+		}catch(NumberFormatException e) {
+			throw new ConfigTypeException("Invalid integer type '" + "'");
+		}
 	}
 	
 	public float getAsFloat() {
-		return Float.parseFloat(value);
+		try {
+			return Float.parseFloat(value);
+		}catch(NumberFormatException e) {
+			throw new ConfigTypeException("Invalid float type '" + "'");
+		}
 	}
 	
 	public long getAsLong() {
-		return Long.parseLong(value);
+		try {
+			return Long.parseLong(value);
+		}catch(NumberFormatException e) {
+			throw new ConfigTypeException("Invalid long type '" + "'");
+		}
 	}
 	
 	public char getAsChar() {
@@ -44,7 +53,7 @@ public class ConfigProperty {
 		try {
 			return Double.parseDouble(value);
 		}catch(NumberFormatException e) {
-			return 0d;
+			throw new ConfigTypeException("Invalid double type '" + "'");
 		}
 	}
 	
@@ -54,9 +63,9 @@ public class ConfigProperty {
 	
 	public String getAsString() {
 		if(isString()) {
-			return value.substring(1, value.length()-1);
+			return value.substring(1, value.length()-1).replace("\\\"", "\"");
 		}else{
-			return value; // ??
+			throw new ConfigTypeException("Invalid string type '" + "'");
 		}
 	}
 	
@@ -82,10 +91,11 @@ public class ConfigProperty {
 		}else if(value.equalsIgnoreCase("false")){
 			return false;
 		}
-		return false;
+		throw new ConfigTypeException("Invalid boolean type '" + "'");
 	}
 	
 	/* Should pretty much never be used. */
+	@Deprecated
 	public String rawVal() {
 		return this.value;
 	}

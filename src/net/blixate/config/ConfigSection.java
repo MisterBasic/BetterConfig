@@ -6,14 +6,11 @@ public class ConfigSection {
 	
 	String name;
 	String parentSectionName;
-	// HashMaps are used for convenience.
-	// Although HashMaps are probably not necessary; I know how to use them, so why not?
 	HashMap<String, ConfigProperty> properties;
 	
 	ConfigSection(String name) {
 		this.name = name;
 		properties = new HashMap<>();
-		//dictionaries = new HashMap<>();
 	}
 	
 	public ConfigSection(String name, String parent) {
@@ -63,16 +60,10 @@ public class ConfigSection {
 		return name;
 	}
 	
-	// Overrides the default toString()
-	// Seems pretty useless tbh
 	public String toString() {
-		return "[" + this.name + ", propertyCount=" + properties.size() + "]";
+		if(hasParent()) {
+			return "[" + this.name + ", propertyCount=" + properties.size() + "]";
+		}
+		return "[" + this.name + ", propertyCount=" + properties.size() + ", parent=" + this.getParentName() + "]";
 	}
-	
-	// TODO: Allow getProperty() to also get dictionaries.
-	// Since this is separate, you can have a property with the
-	// same name as a dictionary property.
-	//public ConfigDictionary getDictionary(String key) {
-	//	return dictionaries.get(key);
-	//}
 }

@@ -44,7 +44,7 @@ public class ConfigArray extends ConfigProperty {
 		}
 		StringBuilder sb = new StringBuilder("{");
 		for(ConfigProperty val : this.value) {
-			sb.append(val.getName());
+			sb.append(val.value);
 			sb.append(", ");
 		}
 		return this.name + "=" + sb.toString().substring(0, sb.length()-2) + "}";
