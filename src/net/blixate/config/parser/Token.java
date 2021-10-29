@@ -8,7 +8,7 @@ public enum Token {
 	SECTION("\\[[a-zA-Z_]+[a-zA-Z0-9_]*(.*?[:].*?[a-zA-Z_]+[a-zA-Z0-9_]*)?\\]"),
 	PROPERTY("[*]?[a-zA-Z_][a-zA-Z0-9_]*"),
 	EQUALS("[=]"),
-	STRING("\"(?:[^\"\\]|\\.)*\"", "\'(?:[^\'\\]|\\.)*\'"),
+	STRING("\".*\""),
 	NUMBER("[0-9]*[.]?[0-9]+"),
 	LBRACE("\\{"),
 	RBRACE("\\}"),
