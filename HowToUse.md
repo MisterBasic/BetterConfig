@@ -1,7 +1,7 @@
 # How to use BetterConfig
 This is a small guide that shows you how to use the format itself. If you need examples, scroll to the end, otherwise; keep reading.
 
-## DEFINING SECTIONS
+## Sections
 	A section is used to split up properties and values.
 
 Every property is put under a category, called a section. These sections must be used to get a property. Sections are surrounded by `[` and `]`.
@@ -14,7 +14,7 @@ __Example__:
 [MySection]
 ```
 
-## DEFINING PROPERTIES IN SECTIONS
+## Properties
 	A property is a value to be put inside of a section.
 
 Each property can store one (1) value. Although this value can store varying amounts of data, such as an array or text, it is only one object. Every property must end in a semicolon `;`. This means that the entire config can fit on one line, or as many lines as you want.
@@ -30,7 +30,7 @@ __Example__:
 my_property="hehe";
 ```
 
-## DEFINING CONSTANTS
+## Constants
 	Allow reference to other properties!
 
 Constants are the exact same as properties, and are therefore usable as properties. The only change to constants is a single star `*` at the beginning of the property name.
@@ -46,7 +46,7 @@ __Example__:
 my_property = my_constant;
 ```
 
-## VALUE TYPES
+## Value Types
 	What value can a property hold?
 	
 - Strings: Strings are surrounded by double quotes `"` or single quotes `'`
@@ -56,7 +56,7 @@ my_property = my_constant;
 - Arrays: Arrays are surrounded by braces (`{` and `}`) and each value is seperated by a comma `,`. Arrays can have any type of value, even mixed in. Such as strings and integers!
 - Constants: Property names within other properties.
 
-## FULL FILE EXAMPLE
+## Example
 ```js
 # This is an example of a config for a game.
 # These comments are also acceptable in files.
