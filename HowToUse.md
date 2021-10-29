@@ -2,7 +2,7 @@
 This is a small guide that shows you how to use the format itself. If you need examples, scroll to the end, otherwise; keep reading.
 
 ## Sections
-	A section is used to split up properties and values.
+A section is used to split up properties and values.
 
 Every property is put under a category, called a section. These sections must be used to get a property. Sections are surrounded by `[` and `]`.
 An optional parent can be provided, using `:` after the name of the section, with the name of the parent afterwards, then closing the section.
@@ -15,7 +15,7 @@ __Example__:
 ```
 
 ## Properties
-	A property is a value to be put inside of a section.
+A property is a value to be put inside of a section.
 
 Each property can store one (1) value. Although this value can store varying amounts of data, such as an array or text, it is only one object. Every property must end in a semicolon `;`. This means that the entire config can fit on one line, or as many lines as you want.
 
@@ -31,7 +31,7 @@ my_property="hehe";
 ```
 
 ## Constants
-	Allow reference to other properties!
+Allow reference to other properties!
 
 Constants are the exact same as properties, and are therefore usable as properties. The only change to constants is a single star `*` at the beginning of the property name.
 
@@ -47,7 +47,7 @@ my_property = my_constant;
 ```
 
 ## Value Types
-	What value can a property hold?
+What value can a property hold?
 	
 - Strings: Strings are surrounded by double quotes `"` or single quotes `'`
 - Integers: Whole numbers, no decimal.
