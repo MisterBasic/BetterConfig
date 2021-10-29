@@ -28,15 +28,11 @@ Here is an example on how to get these properties from Java:
 ```java
 public static void main(String[] args) {
 	ConfigFile file;
+	file = ConfigFile.readFile("configtest.bcfg"); // Handles IOException already.
+	// If you want to handle the IOException:
 	file = new ConfigFile(new File("configtest.bcfg"));
-	// OR
-	file = ConfigFile.readFile("configtest.bcfg");
-	try {
-		file.read();
-	} catch (IOException e) {
-		System.out.println("Something went wrong! Couldn't load configuration file!");
-		return;
-	}
+	try { file.read() } catch(IOException e) { /* handle exception here... */ }
+	// Otherwise, ignore those two lines and just use ConfigFile.readFile()
 	ConfigSection settings = file.getSection("Settings");
 	String language = settings.getProperty("language").getAsString();
 	float mouse_sensitivity = settings.getProperty("sensitivity").getAsFloat();
