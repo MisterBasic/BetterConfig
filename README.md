@@ -3,28 +3,29 @@ BCFG (short for Better Configuration File-format... G) is a multi-purpose config
 
 ## Why use this format? Why not INI, JSON or TOML?
 
-- JSON is probably the most obvious: It is NOT a configuration format.
-- INI is a terrible format. No data types, array nesting, or anything other than text.
-- TOML is suprising good, I didn't learn of it until after making this. The only problem is serialization, it wasn't designed to be serialized. BCFG can be serialized (it's just text, in fact the entire file can be one line long).
+- JSON is probably the most obvious: It is NOT a configuration format and there is no comments.
+- INI is a mediocre format. There is no specification, and it's just text.
+- TOML is too complicated, has too many features, and doesn't understand what it wants to be.
 - YAML is a standardized mess. You can find issues with YAML using Google.
+- **Note** StrictYAML is a better version of YAML, and if you need that type of format I do recommend it.
 
 If you are coming from these formats, this format should be familar. The only difference is the symbols used.
 
 ```py
 [Settings]
-language = "English";
-sensitivity = 42.7;
+language = "English"
+sensitivity = 42.7
 unlocked_abilities = {
   "Fire",
   "Ice",
   "Double-jump"
-};
+}
 [State]
 random_stuff = {
-  4, "A String", "Dynamic typing in arrays!?", 420.69
-};
+  4, "A String", "Dynamic typing in arrays!?", 420.69, { 1, 2, 3, 4 }
+}
 ```
-Here is an example on how to get these properties from Java:
+Here is an example on how to get these properties from Java (The language that it's currently written in):
 ```java
 public static void main(String[] args) {
 	ConfigFile file = ConfigFile.readFile("configtest.bcfg"); // Handles IOException already.
