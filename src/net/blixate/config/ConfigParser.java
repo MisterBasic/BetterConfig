@@ -17,10 +17,8 @@ public class ConfigParser {
 			Pattern.compile("\\[([a-zA-Z_]+[a-zA-Z0-9_]*).*?[:].*?([a-zA-Z_]+[a-zA-Z0-9_]*)\\]");
 	
 	static Pattern pattern;
-	static ArrayList<ConfigProperty> constantPool;
 	
 	static {
-		constantPool = new ArrayList<>();
 		StringBuffer tokenPatternsBuffer = new StringBuffer();
 		for(Token token : Token.values())
 			tokenPatternsBuffer.append("|(?<" + token.name() + ">" + token.regex() + ")");
@@ -28,8 +26,20 @@ public class ConfigParser {
 		pattern = Pattern.compile(tokenPatternsString);
 	}
 	
+	/**
+	 * A list of tokens, which is filled when {@link ConfigParser#lex(String)} is called.
+	 */
 	Tok[] tokens;
+	
+	
+	/**
+	 * Default value is null. This is where output should be printed to.
+	 * Use {@link System#out} for console output, or a {@code FileOutputStream} to output to a file.
+	 */
 	OutputStream dump = null;
+	
+	
+	
 	ArrayList<ConfigSection> sections;
 	
 	public ConfigParser(OutputStream output) {
@@ -41,7 +51,7 @@ public class ConfigParser {
 		return this.sections.toArray(new ConfigSection[0]);
 	}
 	/**
-	 * Lexical analysis of the file.
+	 * Lexical analysis of the file. Output is saved to {@link ConfigParser#tokens}.
 	 */
 	public void lex(String content) {
 		long start = System.currentTimeMillis();
@@ -70,73 +80,56 @@ public class ConfigParser {
 	 */
 	public void parse() {
 		long start = System.currentTimeMillis();
-		ConfigSection currentSection = null;
+		ConfigSection currentSection = new ConfigSection(ConfigFile.GLOBAL_SECTION);
 		String property = null;
 		Stack<Tok> value = new Stack<Tok>();
 		boolean readValue = false;
-		for(Tok token : tokens) {
-			if(readValue && token.t != Token.ENDL) {
-				value.push(token);
-			}
-			else if(token.t == Token.ENDL) {
-				ConfigProperty prop = null;
-				if(!readValue) {
-					if(value.isEmpty()) {
-						prop = new ConfigProperty(property, "null");
+		Tok token;
+		for(int i = 0; i < tokens.length + 1; i++) {
+			if(i >= tokens.length)
+				token = new Tok(Token.ENDL, ";", tokens[i-1].index()); // Fake a token for terminator
+			else
+				token = tokens[i];
+			
+			if(readValue) {
+				if(isEndOfPropertyDefinition(token)) {
+					ConfigProperty prop = null;
+					
+					if(!readValue) {
+						
+						if(value.isEmpty()) {
+							prop = new ConfigProperty(property, "null");
+						}
+						
+					} else {
+						if(isInvalidValue(value)){
+							configError("Invalid value while evaluating property \"" + property + "\"", token);
+						}
+						
+						readValue = false;
+						prop = evaluate(property, value);
+						if(currentSection.hasProperty(prop.getName())) {
+							debug("[Parser] Property \"" + prop.getName() + "\" overwritten.");
+						}
 					}
-				}else{
-					readValue = false;
-					if(isInvalidValue(value)){
-						configError("Invalid value while evaluating property \"" + property + "\"", token);
+					
+					if(prop != null) {
+						currentSection.addProperty(prop.getName(), prop);
+						property = null;
+						value.clear();
+						i--; // move backwards
+						debug("[Parser] Property \"" + prop.getName() + "\" created.");
 					}
-					boolean isConstant = false;
-					if(property.charAt(0) == '*') {
-						property = property.substring(1);
-						isConstant = true;
-					}
-					prop = evaluate(property, value);
-					if(isConstant) {
-						constantPool.add(prop);
-					}
-					if(currentSection.hasProperty(prop.getName())) {
-						debug("[Parser] Property \"" + prop.getName() + "\" overwritten.");
-					}
-				}
-				if(prop != null) {
-					currentSection.addProperty(prop.getName(), prop);
-					property = null;
-					value.clear();
-					debug("[Parser] Property \"" + prop.getName() + "\" created.");
+				} else {
+					value.push(token);
 				}
 			}
 			else {
 				if(token.t == Token.SECTION) {
 					if(property != null) configError("Invalid section start", token);
-					if(currentSection != null) {
-						this.sections.add(currentSection);
-						debug("[Parser] Section \"" + currentSection.name + "\" defined.");
-					}
-					if(sectionHasParent(token.data())) {
-						Pattern p = PARENT_SEPERATE_PATTERN;
-						Matcher m = p.matcher(token.data());
-						if(m.find()) {
-							String sectionName = m.group(1);
-							String parent = m.group(2);
-							currentSection = new ConfigSection(sectionName, parent);
-							for(ConfigSection section : this.sections) {
-								if(section.getName().equals(parent)) {
-									for(ConfigProperty prop : section.getProperties()) {
-										currentSection.addProperty(prop);
-										debug("[Parser] Inherited property \"" + prop.getName() + "\" added.");
-									}
-								}
-							}
-						}else{
-							configError("Invalid parent in section " + token.data(), token);
-						}
-					}else {
-						currentSection = new ConfigSection(token.data().substring(1, token.data().length()-1));
-					}
+					this.sections.add(currentSection);
+					debug("[Parser] Section \"" + currentSection.name + "\" defined.");
+					currentSection = new ConfigSection(token.data().substring(1, token.data().length()-1));
 				}
 				else if(token.t == Token.PROPERTY) {
 					if(property != null) {
@@ -145,18 +138,26 @@ public class ConfigParser {
 					property = token.data();
 				}
 				else if(token.t == Token.EQUALS) {
-					if(readValue) configError("Too many '=' when assigning property value", token);
+					if(readValue) configError("'"+token.data()+"' is not a value.", token);
 					readValue = true;
 				}
 			}
 		}
 		if(currentSection != null) {
 			this.sections.add(currentSection);
-			debug("[Parser] Section created \"" + currentSection.name + "\"");
+			debug("[Parser] Section \"" + currentSection.name + "\" defined. (EOF-terminated)");
 		}
 		long end = System.currentTimeMillis();
 		debug("Parse Time: " + (end - start) + "ms");
 	}
+	
+	/**
+	 * Roughly figures out if this is the end of a property's value
+	 */
+	private boolean isEndOfPropertyDefinition(Tok token) {
+		return token.t == Token.ENDL || token.t == Token.PROPERTY || token.t == Token.SECTION;
+	}
+
 	private static ConfigProperty evaluate(String propName, Stack<Tok> tokens) {
 		if(tokens.size() < 1) {
 			return null;
@@ -164,26 +165,7 @@ public class ConfigParser {
 		if(tokens.firstElement().t == Token.LBRACE) {
 			return evaluateArray(propName, tokens);
 		}
-		if(tokens.peek().t == Token.PROPERTY) {
-			if(tokens.peek().data().startsWith("*")) {
-				throw new ConfigParsingException("Invalid use of constants, '*' (STAR) should only be used when DEFINING constants.");
-			}
-			ConfigProperty p = getConstant(tokens.peek().data());
-			if(p == null) {
-				throw new ConfigParsingException("Unknown constant \"" + tokens.peek().data() + "\" at " + tokens.peek().index());
-			}
-			return new ConfigProperty(propName, p.value);
-		}
 		return new ConfigProperty(propName, tokens.peek().data());
-	}
-	
-	private static ConfigProperty getConstant(String constant) {
-		for(ConfigProperty p : constantPool) {
-			if(p.getName().equals(constant)) {
-				return p;
-			}
-		}
-		return null;
 	}
 	
 	private static boolean isInvalidValue(Stack<Tok> value) {
@@ -195,7 +177,6 @@ public class ConfigParser {
 		case STRING:
 		case NULL:
 		case BOOLEAN:
-		case PROPERTY:
 			return false;
 		default:
 			return true;
@@ -250,11 +231,6 @@ public class ConfigParser {
 			throw new ConfigParsingException(s + " (At index "+t.index()+")");
 		}
 	}
-	
-	private static boolean sectionHasParent(String name) {
-		return name.matches("\\[[a-zA-Z_]+[a-zA-Z0-9_]*.*?[:].*?[a-zA-Z_]+[a-zA-Z0-9_]*\\]");
-	}
-	
 	private void debug(String...strings) {
 		if(this.dump == null) return;
 		String line = String.join("", strings) + "\n";

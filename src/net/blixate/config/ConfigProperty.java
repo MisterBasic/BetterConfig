@@ -1,9 +1,13 @@
 package net.blixate.config;
 
-import net.blixate.config.error.ConfigTypeException;
-import net.blixate.config.parser.Token;
+import java.math.BigInteger;
 
-public class ConfigProperty {
+import net.blixate.config.error.ConfigTypeException;
+import net.blixate.config.parser.NumberParser;
+import net.blixate.config.parser.Token;
+import net.blixate.config.writer.ConfigSerializable;
+
+public class ConfigProperty implements ConfigSerializable{
 	
 	String name;
 	String value;
@@ -23,17 +27,22 @@ public class ConfigProperty {
 	
 	public int getAsInt() {
 		try {
-			return Integer.parseInt(value);
+			return NumberParser.parseInt(value);
 		}catch(NumberFormatException e) {
-			throw new ConfigTypeException("Invalid integer type '" + "'");
+			e.printStackTrace();
+			throw new ConfigTypeException("Invalid integer type '" + value + "'");
 		}
+	}
+	
+	public BigInteger getAsBigInteger() {
+		return new BigInteger(value);
 	}
 	
 	public float getAsFloat() {
 		try {
 			return Float.parseFloat(value);
 		}catch(NumberFormatException e) {
-			throw new ConfigTypeException("Invalid float type '" + "'");
+			throw new ConfigTypeException("Invalid float type '" + value + "'");
 		}
 	}
 	
@@ -41,7 +50,7 @@ public class ConfigProperty {
 		try {
 			return Long.parseLong(value);
 		}catch(NumberFormatException e) {
-			throw new ConfigTypeException("Invalid long type '" + "'");
+			throw new ConfigTypeException("Invalid long type '" + value + "'");
 		}
 	}
 	
@@ -53,7 +62,7 @@ public class ConfigProperty {
 		try {
 			return Double.parseDouble(value);
 		}catch(NumberFormatException e) {
-			throw new ConfigTypeException("Invalid double type '" + "'");
+			throw new ConfigTypeException("Invalid double type '" + value+ "'");
 		}
 	}
 	
@@ -65,7 +74,7 @@ public class ConfigProperty {
 		if(isString()) {
 			return value.substring(1, value.length()-1).replace("\\\"", "\"");
 		}else{
-			throw new ConfigTypeException("Invalid string type '" + "'");
+			throw new ConfigTypeException("Invalid string type '" + value + "'");
 		}
 	}
 	
@@ -86,17 +95,17 @@ public class ConfigProperty {
 	}
 
 	public boolean getAsBoolean() {
-		if(value.equalsIgnoreCase("true")) {
-			return true;
-		}else if(value.equalsIgnoreCase("false")){
-			return false;
+		if(value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+			return value.equalsIgnoreCase("true");
 		}
-		throw new ConfigTypeException("Invalid boolean type '" + "'");
+		throw new ConfigTypeException("Invalid boolean type '" + value + "'");
 	}
 	
-	/* Should pretty much never be used. */
-	@Deprecated
-	public String rawVal() {
+	@Override
+	public String value() {
+		if(isString()) {
+			return this.getAsString();
+		}
 		return this.value;
 	}
 }

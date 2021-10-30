@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Stack;
 
+import net.blixate.config.ConfigFile;
+
 public class ConfigFileWriter {
 	
 	File file;
@@ -51,5 +53,9 @@ public class ConfigFileWriter {
 			this.file.createNewFile();
 		return Files.newOutputStream(this.file.toPath());
 	}
-	
+
+	public static ConfigFileWriter loadFile(ConfigFile cfg) {
+		ConfigFileWriter writer = new ConfigFileWriter(cfg.getFile());
+		return writer;
+	}
 }

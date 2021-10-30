@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 public class ConfigFile {
 	
+	public static final String GLOBAL_SECTION = "Global";
+	
 	private File file;
 	private ConfigSection[] sections;
 	OutputStream dump = null;
@@ -28,6 +30,10 @@ public class ConfigFile {
 
 	public ConfigProperty property(String section, String property) {
 		return this.getSection(section).getProperty(property);
+	}
+	
+	public ConfigProperty globalProperty(String property) {
+		return this.getSection(GLOBAL_SECTION).getProperty(property);
 	}
 	
 	public ConfigSection getSection(String name) {
@@ -106,6 +112,12 @@ public class ConfigFile {
 		if(!this.file.exists())
 			this.file.createNewFile();
 		return Files.newInputStream(this.file.toPath());
+	}
+	
+	// For writing file data
+	
+	public File getFile() {
+		return this.file;
 	}
 	
 }

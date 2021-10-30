@@ -7,12 +7,15 @@ public class ArrayWriter extends PropertyWriter {
 		this.name = name; this.values = value; 
 		this.parent = parent;
 	}
+
 	@Override
 	public String write() {
 		String valueString = "{";
 		for(Object v : values) {
 			if(v instanceof String)
 				valueString += "\"" + v.toString() + "\", ";
+			else if(v instanceof ConfigSerializable)
+				valueString += ((ConfigSerializable)v).value();
 			else
 				valueString += v.toString() + ", ";
 		}
