@@ -12,9 +12,10 @@ BCFG (short for Better Configuration File-format... G) is a multi-purpose config
 If you are coming from these formats, this format should be familar. The only difference is the symbols used.
 
 ```py
+# Here is an example for settings.
 [Settings]
 language = "English"
-sensitivity = 42.7
+sensitivity: 42.7 # You can use a '=' or a ':'!
 unlocked_abilities = {
   "Fire",
   "Ice",
