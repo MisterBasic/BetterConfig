@@ -5,6 +5,8 @@ A section is defined in square brackets (`[` and `]`). Each section can have it'
 ```
 [Section]
 some_property = 42
+x = 10
+x = 15 # This will overwrite the previous property called "x"
 
 [AnotherSection]
 some_property = 60
@@ -26,5 +28,5 @@ When defining a property, you can define multiple elements inside one property. 
 ### Example
 ```
 [idk]
-arrays = { 1, 3.4, "Hello?", { 1, 2, 3, 4 } }
+AnArrayWow = { 1, 3.4, "Hello?", { 1, 2, 3, 4, "Goose" } }
 ```
