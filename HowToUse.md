@@ -30,7 +30,7 @@ When defining a property, you can define multiple elements inside one property. 
 AnArrayWow = { 1, 3.4, "Hello?", { 1, 2, 3, 4, "Goose" } }
 ```
 ## Data Types
-Unlike YAML, this requires explicit data types. These types are inferred, and internally always stored as a string, but data types cannot match.
+Unlike YAML, this requires explicit data types. These types are internally stored as a string, and have to be parsed later when requested.
 ### Integer
 An integer is any whole number. It cannot have decimals. These can also be parsed as a `long` if the programmer requests it.
 ```
