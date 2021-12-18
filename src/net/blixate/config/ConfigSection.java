@@ -5,17 +5,11 @@ import java.util.HashMap;
 public class ConfigSection {
 	
 	String name;
-	String parentSectionName;
 	HashMap<String, ConfigProperty> properties;
 	
-	ConfigSection(String name) {
+	public ConfigSection(String name) {
 		this.name = name;
 		properties = new HashMap<>();
-	}
-	
-	public ConfigSection(String name, String parent) {
-		this(name);
-		this.parentSectionName = parent;
 	}
 	
 	public void addProperty(String name, ConfigProperty value) {
@@ -23,6 +17,8 @@ public class ConfigSection {
 	}
 	
 	public void addProperty(ConfigProperty value) {
+		// There is no checks for if it exists ON PURPOSE!
+		// This is how ConfigWriter V2 works.
 		properties.put(value.getName(), value);
 	}
 	
@@ -31,29 +27,11 @@ public class ConfigSection {
 	}
 	
 	public ConfigProperty getProperty(String name) {
-		ConfigProperty prop = this.properties.get(name);
-		if(prop == null) {
-			return null;
-		}
-		return prop;
+		return hasProperty(name) ? this.properties.get(name) : new ConfigNull(name);
 	}
 	
 	public ConfigProperty[] getProperties() {
-		ConfigProperty[] props = new ConfigProperty[properties.size()];
-		int i = 0;
-		for(ConfigProperty p : properties.values()) {
-			props[i] = p;
-			i++;
-		}
-		return props;
-	}
-	
-	public boolean hasParent() {
-		return this.parentSectionName != null;
-	}
-	
-	public String getParentName() {
-		return this.parentSectionName;
+		return properties.values().toArray(new ConfigProperty[0]);
 	}
 	
 	public String getName() {
@@ -61,9 +39,38 @@ public class ConfigSection {
 	}
 	
 	public String toString() {
-		if(hasParent()) {
-			return "[" + this.name + ", propertyCount=" + properties.size() + "]";
-		}
-		return "[" + this.name + ", propertyCount=" + properties.size() + ", parent=" + this.getParentName() + "]";
+		return "[" + this.name + ", propertyCount=" + properties.size() + "]";
+	}
+	
+	/* A bunch of getters for different types of data.
+	 * This is to help clean up code, as sometimes lines can be a bit too long.
+	 */
+	
+	public int getInt(String property) {
+		return getProperty(property).getAsInt();
+	}
+	
+	public float getFloat(String property) {
+		return getProperty(property).getAsFloat();
+	}
+	
+	public String getString(String property) {
+		return getProperty(property).getAsString();
+	}
+	
+	public double getDouble(String property) {
+		return getProperty(property).getAsDouble();
+	}
+	
+	public long getLong(String property) {
+		return getProperty(property).getAsLong();
+	}
+	
+	public ConfigArray getArray(String property) {
+		return getProperty(property).asArray();
+	}
+
+	public boolean getBoolean(String property) {
+		return getProperty(property).getAsBoolean();
 	}
 }

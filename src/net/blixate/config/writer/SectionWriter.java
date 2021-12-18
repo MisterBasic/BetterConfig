@@ -2,6 +2,11 @@ package net.blixate.config.writer;
 
 import java.util.Stack;
 
+/**
+ * @deprecated This is inefficent, uses too much memory, and was a terrible solution.
+ * Please use the updated {@link net.blixate.config.writer.v2.ConfigWriter} instead.
+ */
+@Deprecated
 public class SectionWriter extends WriterObject{
 	String name;
 	Stack<PropertyWriter> properties;

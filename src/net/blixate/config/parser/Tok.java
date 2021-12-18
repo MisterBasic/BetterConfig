@@ -1,8 +1,6 @@
 package net.blixate.config.parser;
 
-import net.blixate.config.parser.Token;
-
-public class Tok {
+class Tok {
 	public Token t;
 	String data;
 	int index;

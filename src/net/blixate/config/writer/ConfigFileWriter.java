@@ -8,8 +8,13 @@ import java.util.Stack;
 
 import net.blixate.config.ConfigFile;
 
+/**
+ * @deprecated This is inefficent, uses too much memory, and was a terrible solution.
+ * Please use the updated {@link net.blixate.config.writer.v2.ConfigWriter} instead.
+ */
+@Deprecated
 public class ConfigFileWriter {
-	
+	// TODO: Rewrite this holy shit.
 	File file;
 	
 	Stack<SectionWriter> sections;
@@ -32,10 +37,17 @@ public class ConfigFileWriter {
 	public void writeArray(String name, Object[] value) {
 		sections.peek().properties.add(new ArrayWriter(name, value, sections.peek()));
 	}
-	public void writeProperty(String name, Object value) {
+	public void writeProperty(String name, int value) {
 		sections.peek().properties.add(new PropertyWriter(name, String.valueOf(value), sections.peek()));
 	}
-	public void writeProperty(String name, int value) {
+	public void writeProperty(String name, ConfigSerializable value) {
+		if(value == null) {
+			this.writeProperty(name, "null");
+			return;
+		}
+		sections.peek().properties.add(new PropertyWriter(name, value.value(), sections.peek()));
+	}
+	public void writeProperty(String name, Object value) {
 		sections.peek().properties.add(new PropertyWriter(name, String.valueOf(value), sections.peek()));
 	}
 	
@@ -43,7 +55,12 @@ public class ConfigFileWriter {
 	public void save() throws IOException {
 		OutputStream stream = openWriter();
 		for(SectionWriter sec : sections) {
-			stream.write(sec.write().getBytes());
+			try{
+				stream.write(sec.write().getBytes());
+			}catch(Throwable t) {
+				System.err.println("An error occurred while saving section " + sec.name + ":");
+				t.printStackTrace();
+			}
 		}
 		stream.close();
 	}

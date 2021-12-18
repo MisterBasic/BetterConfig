@@ -45,6 +45,9 @@ public class NumberParser {
 	}
 	
 	public static int parseInt(String value) {
+		if(value == null) {
+			return -1;
+		}
 		int radix = getRadix(value);
 		String parseString = getParsable(value);
 		return Integer.parseInt(parseString, radix);

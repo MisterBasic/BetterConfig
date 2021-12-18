@@ -1,5 +1,10 @@
 package net.blixate.config.writer;
 
+/**
+ * @deprecated This is inefficent, uses too much memory, and was a terrible solution.
+ * Please use the updated {@link net.blixate.config.writer.v2.ConfigWriter} instead.
+ */
+@Deprecated
 public class ArrayWriter extends PropertyWriter {
 	Object[] values;
 	ArrayWriter(String name, Object[] value, WriterObject parent) { 
@@ -12,13 +17,19 @@ public class ArrayWriter extends PropertyWriter {
 	public String write() {
 		String valueString = "{";
 		for(Object v : values) {
-			if(v instanceof String)
-				valueString += "\"" + v.toString() + "\", ";
-			else if(v instanceof ConfigSerializable)
-				valueString += ((ConfigSerializable)v).value();
-			else
-				valueString += v.toString() + ", ";
+			if(v == null) {
+				valueString += "null,";
+			}
+			if(v instanceof ConfigSerializable)
+				valueString += ((ConfigSerializable) v).value();
+			else if(v instanceof String)
+				valueString += "\"" + v + "\"";
+			else 
+				valueString += v;
+			
+			valueString += ", ";
 		}
-		return this.name + " = " + valueString.substring(0, valueString.length()-2) + "};";
+		valueString = (valueString.length() > 2 ? valueString.substring(0, valueString.length()-2) : "{") + "}";
+		return this.name + " = " + valueString;
 	}
 }

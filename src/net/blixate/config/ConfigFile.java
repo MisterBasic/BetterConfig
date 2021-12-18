@@ -2,10 +2,11 @@ package net.blixate.config;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.util.ArrayList;
+
+import net.blixate.config.parser.ConfigParser;
+import net.blixate.config.writer.v2.ConfigWriter;
 
 public class ConfigFile {
 	
@@ -33,7 +34,16 @@ public class ConfigFile {
 	}
 	
 	public ConfigProperty globalProperty(String property) {
+		if(!hasSection(GLOBAL_SECTION) || this.getSection(GLOBAL_SECTION).getProperties().length == 0) return null;
 		return this.getSection(GLOBAL_SECTION).getProperty(property);
+	}
+	
+	public boolean hasGlobalProperty(String name) {
+		return this.globalProperty(name) != null;
+	}
+	
+	public boolean hasSection(String name) {
+		return this.getSection(name) != null;
 	}
 	
 	public ConfigSection getSection(String name) {
@@ -45,16 +55,6 @@ public class ConfigFile {
 		return null;
 	}
 	
-	public ConfigSection[] getSectionChildren(String name) {
-		ArrayList<ConfigSection> sections = new ArrayList<>();
-		for(ConfigSection section : this.sections) {
-			if(section.getParentName().equals(name)) {
-				sections.add(section);
-			}
-		}
-		return sections.toArray(new ConfigSection[0]);
-	}
-	
 	public ConfigSection[] getSections() {
 		return this.sections;
 	}
@@ -62,13 +62,22 @@ public class ConfigFile {
 	// For reading the file data
 	// -------------------------------
 	
+	/**
+	 * Read, lex and parse a configuration file.
+	 * @param name The name of the file
+	 */
 	public static ConfigFile readFile(String name) {
 		return readFile(name, null);
 	}
 	
-	public static ConfigFile readFile(String name, OutputStream out) {
+	/**
+	 * Read, lex and parse a configuration file. Allows debug information to be printed.
+	 * @param name The name of the file
+	 * @param debugStream where to output debug information.
+	 */
+	public static ConfigFile readFile(String name, OutputStream debugStream) {
 		File f = new File(name);
-		ConfigFile c = new ConfigFile(f, out);
+		ConfigFile c = new ConfigFile(f, debugStream);
 		try{
 			c.read();
 		} catch (IOException e) {
@@ -79,15 +88,16 @@ public class ConfigFile {
 	
 	/**
 	 * Load, lex then parse.
-	 * @returns true if the reading succeeded, false if an error occurred.
+	 * This function can be called multiple times to update our memory object with the state of the file.
 	 * @throws IOException
 	 */
-	public void read() throws IOException {
+	public ConfigFile read() throws IOException {
 		String s = load(); // read file
 		ConfigParser parser = new ConfigParser(this.dump);
 		parser.lex(s); // lexical analysis
 		parser.parse(); // parsing
 		this.sections = parser.getSections();
+		return this;
 	}
 	
 	/**
@@ -96,28 +106,21 @@ public class ConfigFile {
 	 * @throws IOException
 	 */
 	private String load() throws IOException{
-		InputStream stream = this.openReader();
-		String s = "";
-		while(stream.available() != 0) s += (char)stream.read();
-		stream.close();
-		return s;
+		String content = "";
+		for(String line : Files.readAllLines(this.file.toPath())) {
+			content += line + "\n";
+		}
+		return content;
 	}
-	
-	/**
-	 * Create an InputStream for the file.
-	 * @returns InputStream of file
-	 * @throws IOException
-	 */
-	private InputStream openReader() throws IOException {
-		if(!this.file.exists())
-			this.file.createNewFile();
-		return Files.newInputStream(this.file.toPath());
-	}
-	
+
 	// For writing file data
 	
 	public File getFile() {
 		return this.file;
+	}
+	
+	public ConfigWriter getWriter() {
+		return ConfigWriter.getWriter(this);
 	}
 	
 }
